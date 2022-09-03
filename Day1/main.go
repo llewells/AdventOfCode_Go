@@ -8,8 +8,8 @@ import (
 	"strconv"
 )
 
-func main() {
-	f, err := os.Open("input.txt")
+func readFile(path string) []int {
+	f, err := os.Open(path)
 
 	if err != nil {
 		log.Fatal(err)
@@ -18,18 +18,37 @@ func main() {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	count := -1               // slate at -1 to count for the intital depth being > 0
-	var current, previous int // current will be 0 so first depth will be greater
+
+	var lines []int
 	for scanner.Scan() {
 		strValue := scanner.Text()
-		current, _ = strconv.Atoi(strValue)
-		if current > previous {
-			count += 1
-		}
-		previous = current
+		intValue, _ := strconv.Atoi(strValue)
+		lines = append(lines, intValue)
 	}
-	fmt.Printf("Total number of ints = %d", count)
+
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+
+	return lines
+}
+
+func main() {
+	data := readFile("input.txt")
+	var current, previous, count int
+	for i := 0; i <= len(data); i++ {
+		if (i + 2) >= len(data) {
+			break
+		}
+		current = data[i] + data[i+1] + data[i+2]
+
+		if i > 0 {
+			if current > previous {
+				count += 1
+			}
+		}
+		previous = current
+	}
+	fmt.Printf("Total number of incs: %d", count)
+
 }
